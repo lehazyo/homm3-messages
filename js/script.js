@@ -1,0 +1,1 @@
+var generator = new HommMessageGenerator();

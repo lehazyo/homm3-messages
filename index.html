@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+
+  <link type="text/css" rel="stylesheet" href="css/homm-message-generator.css" />
+
+  <title>HoMM message generator</title>
+
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="left-panel">
+      <div class="controls-wrapper">
+        <div class="input-wrapper">
+          <div class="input-header">
+            Message text:
+          </div>
+          <textarea id="input">Write your text in the left panel</textarea>
+        </div>
+
+        <div class="input-wrapper">
+          <div class="input-header">
+            Player color:
+          </div>
+          <div class="colors-wrapper">
+            <div data-color="red" class="color-item selected"></div>
+            <div data-color="blue" class="color-item"></div>
+            <div data-color="orange" class="color-item"></div>
+            <div data-color="green" class="color-item"></div>
+            <div data-color="brown" class="color-item"></div>
+            <div data-color="violet" class="color-item"></div>
+            <div data-color="teal" class="color-item"></div>
+            <div data-color="pink" class="color-item"></div>
+          </div>
+        </div>
+
+        <div class="input-wrapper">
+          <div class="input-header">
+            Buttons to show:
+          </div>
+          <div class="buttons-wrapper">
+            <div data-button="ok" class="checkbox-wrapper">
+              <div class="checkbox-icon checked"></div>
+              <div class="checkbox-label">Okay</div>
+            </div>
+
+            <div data-button="cancel" class="checkbox-wrapper">
+              <div class="checkbox-icon"></div>
+              <div class="checkbox-label">Cancel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-wrapper">
+        <div class="about-icon open">
+          About tool
+        </div>
+        <div class="about-icon close">
+          Close
+        </div>
+
+        <div class="about-text">
+          <p>
+            This text imitates style of message window from 'Heroes of Might and Magic III' video game.
+          </p>
+          <p>
+            Known bugs:
+            <ul>
+              <li>wrong vertical aligning (could not reverse engineer it yet).</li>
+              <li>wrong left and right padding in widest window (could not figure out what is wrong yet)</li>
+              <li>it is possible to make only cancel button, which is impossible in the original game, but I don't care</li>
+            </ul>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
+
+  <!--<script src="js/test_texts.js"></script>-->
+  <script src="js/HommMessageGenerator.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

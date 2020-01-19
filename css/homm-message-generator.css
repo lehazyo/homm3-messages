@@ -55,7 +55,7 @@ body {
 }
 
 #canvas {
-
+  background: url(../img/wait.png) 50% 50% no-repeat;
 }
 
 #input {

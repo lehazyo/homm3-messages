@@ -1,5 +1,7 @@
 class HommMessageGenerator {
   constructor() {
+    this.ready = false
+
     this.message_size = [0, 0];
     this.max_width = 10;
     this.max_height = 5;
@@ -18,20 +20,22 @@ class HommMessageGenerator {
     this.vertical_border_width = 14;
     this.horizontal_color_height = 5;
     this.vertical_color_width = 4;
-    
+
     this.color_corner_size = 56;
+
     this.color = "red";
     this.use_color = true;
-    
+
     this.buttons_show = {
       "ok": true,
       "cancel": false
     };
-    this.button_size = [66, 32];
-    this.button_margin = 16;
-    if(this.color === "" || this.color == false || this.color == null || typeof this.color === "undefined") {
+    if(this.color === "" || this.color === false || this.color === null || typeof this.color === "undefined") {
       this.use_color = false;
     }
+
+    this.button_size = [66, 32];
+    this.button_margin = 16;
 
     this.shadow_offset = [8, 8]; // отступ тени (всех её двух уровней)
 
@@ -54,22 +58,24 @@ class HommMessageGenerator {
     }
     this.scroll_visible = false;
 
+    this.text = ''
+
     this.text_by_lines = []; // разбитый на строки текст
     this.split_words = []; // текст, разбитый по словам
 
-    this.sprite = new Image();
-    this.sprite.src = "img/sprite.png";
+    this.context = null
+  }
 
-    this.input = document.getElementById("input");
-    this.input.addEventListener("input", this.render.bind(this));
-    this.canvas = document.getElementById("canvas");
-    this.context = this.canvas.getContext("2d");
+  get textLength() {
+    return this.text.length
+  }
 
-    this.initControls();
-
-    this.sprite.onload = function() {
-      this.render();
-    }.bind(this);
+  updateText(text) {
+    if (typeof text === 'string') {
+      this.text = text
+    } else {
+      this.text = text.toString()
+    }
   }
 
   render() {
@@ -88,8 +94,7 @@ class HommMessageGenerator {
     var current_phase = "";
     var current_sequence = "";
 
-    for(var i=0;i<this.getInputValueLength();i++) {
-      var char = this.getInputValue()[i];
+    this.text.split('').forEach((char) => {
       var char_type = "";
       if(char.match(/^[\n\r]$/)) {
         char_type = "break";
@@ -111,7 +116,8 @@ class HommMessageGenerator {
         current_phase = char_type;
         current_sequence = "";
       }
-    }
+    })
+
     if(current_sequence !== "") {
       output.push(current_sequence);
     }
@@ -133,8 +139,8 @@ class HommMessageGenerator {
     var is_space_block = false;
     var block = "";
 
-    var max_text_lines = (this.isButtonsVisible()) 
-      ? this.max_text_lines 
+    var max_text_lines = (this.isButtonsVisible())
+      ? this.max_text_lines
       : this.max_text_lines_no_buttons;
 
     for(var i=0;i<this.split_words.length;i++) {
@@ -198,21 +204,13 @@ class HommMessageGenerator {
     this.setPopupHeight();
   }
 
-  getInputValue() {
-    return this.input.value;
-  }
-
-  getInputValueLength() {
-    return this.getInputValue().length;
-  }
-
   drawText() {
     this.getLinesForTextCount();
 
     for(var line_index=0;line_index<this.text_by_lines.length;line_index++) {
       var text_line = this.text_by_lines[line_index];
       var current_x = 0;
-      
+
       if(!this.scroll_visible) { // text align: center
         var joint_line = text_line.join("");
         var joint_line_width = this.getStringWidth(joint_line);
@@ -237,29 +235,29 @@ class HommMessageGenerator {
           if(typeof char_info.translateY !== "undefined") {
             translateY = char_info.translateY;
           }
-          
+
           if(typeof char_info.marginLeft !== "undefined" && (word_index != 0 || char_index != 0 || char_info.marginLeft > 0)) {
             current_x += char_info.marginLeft;
           }
 
           if(typeof char_info.width !== "undefined" && typeof char_info.height !== "undefined") {
             var x_to_draw = this.getPadding("left") + current_x + this.getLineOffset("X");
-            var y_to_draw = 
-              this.getPadding("top") 
+            var y_to_draw =
+              this.getPadding("top")
               + Math.floor((this.lines_for_text_count - this.text_by_lines.length)/2) * this.line_height
-              + line_index * this.line_height 
-              + (this.line_height - char_info.height) 
+              + line_index * this.line_height
+              + (this.line_height - char_info.height)
               + translateY
               + this.getLineOffset("Y");
             this.context.drawImage(
-              this.sprite, 
-              char_info.x, 
+              this.sprite,
+              char_info.x,
               char_info.y,
-              char_info.width, 
+              char_info.width,
               char_info.height,
               x_to_draw,
               y_to_draw,
-              char_info.width, 
+              char_info.width,
               char_info.height,
             );
           }
@@ -380,7 +378,7 @@ class HommMessageGenerator {
     var breakpoint_found = false;
     for(var i=1;i<breakpoints.length;i++) {
       var breakpoint = breakpoints[i];
-      if(this.getInputValueLength() < breakpoint.at) {
+      if(this.textLength < breakpoint.at) {
         breakpoint_found = true;
         if(this.message_size[0] == 0) {
           this.message_size[0] = breakpoints[i-1].width;
@@ -445,7 +443,7 @@ class HommMessageGenerator {
 
     for(var i=0;i<offsets_depending_on_length.length;i++) {
       var offset_object = offsets_depending_on_length[i];
-      if(this.getInputValueLength() > offset_object.count) {
+      if(this.textLength > offset_object.count) {
         this.lines_offset = offset_object.offset;
       }
     }
@@ -517,14 +515,14 @@ class HommMessageGenerator {
         }
 
         this.context.drawImage(
-          this.sprite, 
-          648, 
-          0, 
-          width_to_draw, 
+          this.sprite,
+          648,
+          0,
+          width_to_draw,
           height_to_draw,
           x * this.bg_size,
           y * this.bg_size,
-          width_to_draw, 
+          width_to_draw,
           height_to_draw
         );
       }
@@ -561,28 +559,28 @@ class HommMessageGenerator {
         }
 
         this.context.drawImage(
-          this.sprite, 
-          x_to_cut, 
-          y_to_cut, 
-          this.border_size, 
+          this.sprite,
+          x_to_cut,
+          y_to_cut,
+          this.border_size,
           this.border_size,
           x_to_set,
           y_to_set,
-          this.border_size, 
+          this.border_size,
           this.border_size,
         );
 
         // color
         if(this.use_color) {
           this.context.drawImage(
-            this.sprite, 
-            color_info.corners_offset[0] + (1 + this.color_corner_size) * x, 
-            color_info.corners_offset[1] + (1 + this.color_corner_size) * y, 
-            this.color_corner_size, 
+            this.sprite,
+            color_info.corners_offset[0] + (1 + this.color_corner_size) * x,
+            color_info.corners_offset[1] + (1 + this.color_corner_size) * y,
+            this.color_corner_size,
             this.color_corner_size,
             color_x_to_set,
             color_y_to_set,
-            this.color_corner_size, 
+            this.color_corner_size,
             this.color_corner_size
           );
         }
@@ -595,27 +593,27 @@ class HommMessageGenerator {
       var y_to_set = this.getCanvasHeight() - this.horizontal_border_height - this.shadow_offset[1];
       // upper
       this.context.drawImage(
-        this.sprite, 
+        this.sprite,
         this.border_size * 2,
         0,
-        this.border_size, 
+        this.border_size,
         this.horizontal_border_height,
         x_to_set,
         0,
-        this.border_size, 
+        this.border_size,
         this.horizontal_border_height
       );
 
       // lower
       this.context.drawImage(
-        this.sprite, 
+        this.sprite,
         this.border_size * 2,
         this.horizontal_border_height + this.border_size,
-        this.border_size, 
+        this.border_size,
         this.horizontal_border_height,
         x_to_set,
         y_to_set,
-        this.border_size, 
+        this.border_size,
         this.horizontal_border_height
       );
 
@@ -623,27 +621,27 @@ class HommMessageGenerator {
       if(this.use_color) {
         // upper
         this.context.drawImage(
-          this.sprite, 
+          this.sprite,
           this.border_size * 2,
           color_info.horizontals_offset,
-          this.border_size, 
+          this.border_size,
           this.horizontal_color_height,
           x_to_set,
           8,
-          this.border_size, 
+          this.border_size,
           this.horizontal_color_height
         );
 
         // lower
         this.context.drawImage(
-          this.sprite, 
+          this.sprite,
           this.border_size * 2,
           color_info.horizontals_offset + 1 + this.horizontal_color_height,
-          this.border_size, 
+          this.border_size,
           this.horizontal_color_height,
           x_to_set,
           y_to_set + 2,
-          this.border_size, 
+          this.border_size,
           this.horizontal_color_height
         );
       }
@@ -655,24 +653,24 @@ class HommMessageGenerator {
       var y_to_set = i * this.border_size;
       // left
       this.context.drawImage(
-        this.sprite, 
+        this.sprite,
         this.border_size * 2,
         this.horizontal_border_height,
-        this.vertical_border_width, 
+        this.vertical_border_width,
         this.border_size,
         0,
         y_to_set,
-        this.vertical_border_width, 
+        this.vertical_border_width,
         this.border_size
       );
 
       // right
       this.context.drawImage(
-        this.sprite, 
+        this.sprite,
         this.border_size * 3 - this.vertical_border_width,
         this.horizontal_border_height,
         this.vertical_border_width,
-        this.border_size, 
+        this.border_size,
         right_x_to_set,
         y_to_set,
         this.vertical_border_width,
@@ -683,11 +681,11 @@ class HommMessageGenerator {
       if(this.use_color) {
         // left
         this.context.drawImage(
-          this.sprite, 
+          this.sprite,
           color_info.verticals_offset,
           this.border_size * 2,
           this.vertical_color_width,
-          this.border_size, 
+          this.border_size,
           8,
           y_to_set,
           this.vertical_color_width,
@@ -696,11 +694,11 @@ class HommMessageGenerator {
 
         // right
         this.context.drawImage(
-          this.sprite, 
+          this.sprite,
           color_info.verticals_offset,
           this.border_size * 2,
           this.vertical_color_width,
-          this.border_size, 
+          this.border_size,
           right_x_to_set + 2,
           y_to_set,
           this.vertical_color_width,
@@ -721,7 +719,7 @@ class HommMessageGenerator {
         ok_x = this.getPopupWidth() / 2 - (this.button_size[0] + this.button_margin / 2);
       }
       this.context.drawImage(
-        this.sprite, 
+        this.sprite,
         516,
         228,
         this.button_size[0],
@@ -742,7 +740,7 @@ class HommMessageGenerator {
         cancel_x = (this.getPopupWidth() - this.button_size[0]) / 2;
       }
       this.context.drawImage(
-        this.sprite, 
+        this.sprite,
         516,
         259,
         this.button_size[0],
@@ -763,7 +761,7 @@ class HommMessageGenerator {
     if(this.scroll_visible && which == "left") {
       padding_to_return = this.padding.left_with_scroll;
     }
-    var border_size = (which == "top" || which == "bottom") 
+    var border_size = (which == "top" || which == "bottom")
       ? this.horizontal_border_height
       : this.vertical_border_width;
     return padding_to_return + border_size;
@@ -775,40 +773,40 @@ class HommMessageGenerator {
     var scroll_end_y = this.getPopupHeight() - this.getPadding("bottom") - (this.isButtonsVisible() ? (this.button_size[1] + this.scroll_margins.bottom) : 0);
     // top arrow
     this.context.drawImage(
-      this.sprite, 
-      714, 
+      this.sprite,
+      714,
       257,
-      this.scroll_side, 
+      this.scroll_side,
       this.scroll_side,
       scroll_x,
       scroll_start_y,
-      this.scroll_side, 
+      this.scroll_side,
       this.scroll_side
     );
 
     // scroll handle
     this.context.drawImage(
-      this.sprite, 
-      731, 
+      this.sprite,
+      731,
       257,
-      this.scroll_side, 
+      this.scroll_side,
       this.scroll_side,
       scroll_x,
       scroll_start_y + this.scroll_side,
-      this.scroll_side, 
+      this.scroll_side,
       this.scroll_side
     );
 
     // bottom arrow
     this.context.drawImage(
-      this.sprite, 
-      748, 
+      this.sprite,
+      748,
       257,
-      this.scroll_side, 
+      this.scroll_side,
       this.scroll_side,
       scroll_x,
       scroll_end_y - this.scroll_side,
-      this.scroll_side, 
+      this.scroll_side,
       this.scroll_side
     );
 
@@ -833,41 +831,8 @@ class HommMessageGenerator {
     this.message_size = [0, 0];
   }
 
-  initControls() {
-    var colors = document.querySelectorAll(".color-item");
-    for(var i=0;i<colors.length;i++) {
-      colors[i].addEventListener("click", this.setColor.bind(this, colors[i].getAttribute("data-color")));
-    }
-
-    var checkboxes = document.querySelectorAll(".checkbox-wrapper");
-    for(var i=0;i<checkboxes.length;i++) {
-      checkboxes[i].addEventListener("click", this.toggleCheckbox.bind(this, checkboxes[i].getAttribute("data-button")));
-    }
-
-    document.querySelector(".about-icon.open").addEventListener("click", function() {
-      document.querySelector(".left-panel").classList.add("about");
-    });
-    document.querySelector(".about-icon.close").addEventListener("click", function() {
-      document.querySelector(".left-panel").classList.remove("about");
-    });
-  }
-
   setColor(color) {
-    var colors = document.querySelectorAll(".color-item");
-    for(var i=0;i<colors.length;i++) {
-      colors[i].classList.remove("selected");
-    }
-    document.querySelector(".color-item[data-color='" + color + "']").classList.add("selected");
     this.color = color;
-
-    this.render();
-  }
-
-  toggleCheckbox(button_id) {
-    var new_value = !this.buttons_show[button_id];
-    this.buttons_show[button_id] = new_value;
-
-    document.querySelector(".checkbox-wrapper[data-button='" + button_id + "'] .checkbox-icon").classList[new_value ? "add" : "remove"]("checked");
 
     this.render();
   }
@@ -1177,7 +1142,7 @@ HommMessageGenerator.letters = {
     "y": 264,
     "translateY": 2
   },
-  
+
   // eng lowercase
   "a": {
     "width": 7,
@@ -1351,7 +1316,7 @@ HommMessageGenerator.letters = {
     "x": 174,
     "y": 250
   },
-  
+
   // eng uppercase
   "A": {
     "width": 10,

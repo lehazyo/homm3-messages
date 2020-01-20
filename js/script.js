@@ -1,1 +1,1 @@
-var generator = new HommMessageGenerator();
+var generator = new HommMessageGeneratorDocumentBindings();

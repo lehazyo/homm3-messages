@@ -36,9 +36,10 @@ class HommMessageGeneratorNodeBindings extends HommMessageGenerator {
 
   renderWithTextAndConfig(text, config) {
     this.color = config.color;
-    this.use_color = !(this.color === "" || this.color === false || this.color === null || typeof this.color === "undefined");
 
     this.buttons_show = config.buttons_show
+
+    this.showShadow = config.showShadow
 
     this.updateText(text)
     this.render()

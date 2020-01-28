@@ -248,14 +248,14 @@ class HommMessageGenerator {
           }
 
           if(typeof char_info.width !== "undefined" && typeof char_info.height !== "undefined") {
-            var x_to_draw = this.getPadding("left") + current_x + this.getLineOffset("X");
+            var x_to_draw = this.getPadding("left") + current_x + this.lineOffsetX;
             var y_to_draw =
               this.getPadding("top")
               + Math.floor((this.lines_for_text_count - this.text_by_lines.length)/2) * LINE_HEIGHT
               + line_index * LINE_HEIGHT
               + (LINE_HEIGHT - char_info.height)
               + translateY
-              + this.getLineOffset("Y");
+              + this.lineOffsetY;
             this.context.drawImage(
               this.sprite,
               char_info.x,
@@ -284,18 +284,15 @@ class HommMessageGenerator {
     this.lines_for_text_count = Math.round(this.lines_for_text_count);
   }
 
-  getLineOffset(which) {
-    if(which == "X") {
-      return this.lines_offset[0];
-    }
-    if(which == "Y") {
-      return 0;
-      if(this.text_by_lines.length == 5) {
-        return this.lines_offset[1] + 18;
-      } else {
-        return this.lines_offset[1];
-      }
-    }
+  get lineOffsetX() {
+    return this.lines_offset[0]
+  }
+  get lineOffsetY() {
+    return 0;
+    // if(this.text_by_lines.length === 5) {
+    //   return this.lines_offset[1] + 18
+    // }
+    // return this.lines_offset[1];
   }
 
   checkMaximumPopupWidth() {

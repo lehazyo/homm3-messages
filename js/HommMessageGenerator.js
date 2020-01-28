@@ -1972,5 +1972,3 @@ HommMessageGenerator.colors = {
     "flag": ""
   },
 };
-
-module.exports = HommMessageGenerator

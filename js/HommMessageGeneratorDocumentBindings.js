@@ -4,7 +4,7 @@ class HommMessageGeneratorDocumentBindings extends HommMessageGenerator {
 
     const input = document.getElementById("input")
     input.addEventListener("input", (e) => {
-      this.updateText(e.target.value)
+      this.setText(e.target.value)
       this.render()
     });
     this.text = input.value
@@ -25,7 +25,7 @@ class HommMessageGeneratorDocumentBindings extends HommMessageGenerator {
   initControls() {
     var colors = document.querySelectorAll(".color-item");
     for(var i=0;i<colors.length;i++) {
-      colors[i].addEventListener("click", this.setColor.bind(this, colors[i].getAttribute("data-color")));
+      colors[i].addEventListener("click", this.setColorAndRender.bind(this, colors[i].getAttribute("data-color")));
     }
 
     var checkboxes = document.querySelectorAll(".checkbox-wrapper");
@@ -43,8 +43,8 @@ class HommMessageGeneratorDocumentBindings extends HommMessageGenerator {
     });
   }
 
-  setColor(color) {
-    super.setColor(color)
+  setColorAndRender(color) {
+    super.setColorAndRender(color)
 
     var colors = document.querySelectorAll(".color-item");
     for(var i=0;i<colors.length;i++) {

@@ -55,6 +55,9 @@ class HommMessageGenerator {
 
     //служебные переменные (заполняются сами)
     this.message_size = [0, 0];
+    // в блоках по BORDER_SIZE px
+    // ВМЕСТЕ С ГРАНИЦАМИ
+    // ЧТОБЫ ПОЛУЧИТЬ ШИРИНУ КОНТЕНТА, НАДО ВЫЧЕСТЬ PADDING
 
     this.lines_for_text_count = 0;
 
@@ -68,6 +71,8 @@ class HommMessageGenerator {
     this.context = null
   }
 
+  // region getters
+  // чистые геттеры, без аргументов
   get useColor() {
     return !(this.color === "" || this.color === false || this.color === null || typeof this.color === "undefined")
   }
@@ -76,12 +81,74 @@ class HommMessageGenerator {
     return this.text.length
   }
 
-  updateText(text) {
+  getShadowWidth() {
+    if (!this.showShadow) {
+      return 0
+    }
+    return SHADOW_OFFSET[0]
+  }
+
+  getShadowHeight() {
+    if (!this.showShadow) {
+      return 0
+    }
+    return SHADOW_OFFSET[1]
+  }
+
+  getCanvasWidth() {
+    return this.getPopupWidth() + this.getShadowWidth();
+  }
+
+  getCanvasHeight() {
+    return this.getPopupHeight() + this.getShadowHeight();
+  }
+
+  getPopupWidth() {
+    return this.message_size[0] * BORDER_SIZE;
+  }
+
+  getContentWidth() {
+    return this.getPopupWidth() - this.getPadding("left") - this.getPadding("right");
+  }
+
+  getPopupHeight() {
+    return this.message_size[1] * BORDER_SIZE;
+  }
+
+  getContentHeight() {
+    return this.getPopupHeight() - this.getPadding("top") - this.getPadding("bottom");
+  }
+
+  get lineOffsetX() {
+    return this.lines_offset[0]
+  }
+  get lineOffsetY() {
+    return 0;
+    // if(this.text_by_lines.length === 5) {
+    //   return this.lines_offset[1] + 18
+    // }
+    // return this.lines_offset[1];
+  }
+  // endregion
+
+  // region setters
+  // чистые сеттеры, только обновление значений
+  setColor(color) {
+    this.color = color;
+  }
+
+  setText(text) {
     if (typeof text === 'string') {
       this.text = text
     } else {
       this.text = text.toString()
     }
+  }
+  //endregion
+
+  setColorAndRender(color) {
+    this.setColor(color)
+    this.render()
   }
 
   render() {
@@ -170,7 +237,7 @@ class HommMessageGenerator {
           var space_char = block[j];
           current_space_string += space_char;
           current_line_width += HommMessageGenerator.letters[" "].width;
-          if(current_line_width > this.getPopupWidthWithoutPadding()) {
+          if(current_line_width > this.getContentWidth()) {
             current_line.push(current_space_string);
             this.text_by_lines.push(current_line);
             current_line = [];
@@ -184,7 +251,7 @@ class HommMessageGenerator {
         }
       } else {
         var block_width = this.getStringWidth(block);
-        if(current_line_width + block_width < this.getPopupWidthWithoutPadding()) {
+        if(current_line_width + block_width < this.getContentWidth()) {
           current_line.push(block);
           current_line_width += block_width;
         } else {
@@ -221,7 +288,7 @@ class HommMessageGenerator {
       if(!this.scroll_visible) { // text align: center
         var joint_line = text_line.join("");
         var joint_line_width = this.getStringWidth(joint_line);
-        current_x = Math.round((this.getPopupWidthWithoutPadding() - joint_line_width) / 2);
+        current_x = Math.round((this.getContentWidth() - joint_line_width) / 2)
       } else {
         // render scroll
         this.drawScroll();
@@ -280,19 +347,8 @@ class HommMessageGenerator {
   }
 
   getLinesForTextCount() {
-    this.lines_for_text_count = (this.getPopupHeightWithoutPadding() - (this.isButtonsVisible() ? (BUTTON_SIZE[1] + BUTTON_MARGIN) : 0)) / LINE_HEIGHT;
+    this.lines_for_text_count = (this.getContentHeight() - (this.isButtonsVisible() ? (BUTTON_SIZE[1] + BUTTON_MARGIN) : 0)) / LINE_HEIGHT;
     this.lines_for_text_count = Math.round(this.lines_for_text_count);
-  }
-
-  get lineOffsetX() {
-    return this.lines_offset[0]
-  }
-  get lineOffsetY() {
-    return 0;
-    // if(this.text_by_lines.length === 5) {
-    //   return this.lines_offset[1] + 18
-    // }
-    // return this.lines_offset[1];
   }
 
   widenPopupIfNeeded() {
@@ -451,44 +507,6 @@ class HommMessageGenerator {
   setCanvasSize() {
     this.canvas.width = this.getCanvasWidth();
     this.canvas.height = this.getCanvasHeight();
-  }
-
-  getShadowWidth() {
-    if (!this.showShadow) {
-      return 0
-    }
-    return SHADOW_OFFSET[0]
-  }
-
-  getShadowHeight() {
-    if (!this.showShadow) {
-      return 0
-    }
-    return SHADOW_OFFSET[1]
-  }
-
-  getCanvasWidth() {
-    return this.getPopupWidth() + this.getShadowWidth();
-  }
-
-  getCanvasHeight() {
-    return this.getPopupHeight() + this.getShadowHeight();
-  }
-
-  getPopupWidth() {
-    return this.message_size[0] * BORDER_SIZE;
-  }
-
-  getPopupWidthWithoutPadding() {
-    return this.getPopupWidth() - this.getPadding("left") - this.getPadding("right");
-  }
-
-  getPopupHeight() {
-    return this.message_size[1] * BORDER_SIZE;
-  }
-
-  getPopupHeightWithoutPadding() {
-    return this.getPopupHeight() - this.getPadding("top") - this.getPadding("bottom");
   }
 
   drawShadow() {
@@ -845,12 +863,6 @@ class HommMessageGenerator {
   setDefaults() {
     this.context.clearRect(0, 0, this.getCanvasWidth(), this.getCanvasHeight());
     this.message_size = [0, 0];
-  }
-
-  setColor(color) {
-    this.color = color;
-
-    this.render();
   }
 }
 

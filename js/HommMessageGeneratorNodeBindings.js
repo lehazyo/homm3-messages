@@ -30,18 +30,18 @@ class HommMessageGeneratorNodeBindings extends HommMessageGenerator {
   }
 
   renderText(text) {
-    this.updateText(text)
+    this.setText(text)
     this.render()
   }
 
   renderWithTextAndConfig(text, config) {
-    this.color = config.color;
+    this.setColor(config.color)
 
     this.buttons_show = config.buttons_show
 
     this.showShadow = config.showShadow
 
-    this.updateText(text)
+    this.setText(text)
     this.render()
   }
 

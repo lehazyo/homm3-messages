@@ -59,8 +59,6 @@ class HommMessageGenerator {
     // ВМЕСТЕ С ГРАНИЦАМИ
     // ЧТОБЫ ПОЛУЧИТЬ ШИРИНУ КОНТЕНТА, НАДО ВЫЧЕСТЬ PADDING
 
-    this.lines_for_text_count = 0;
-
     this.lines_offset = 0;
 
     this.scroll_visible = false;
@@ -338,7 +336,7 @@ class HommMessageGenerator {
             var x_to_draw = this.paddingLeft + current_x + this.lineOffsetX;
             var y_to_draw =
               this.paddingTop
-              + Math.floor((this.lines_for_text_count - this.text_by_lines.length)/2) * LINE_HEIGHT
+              + Math.floor((this.linesForTextCount - this.text_by_lines.length)/2) * LINE_HEIGHT
               + line_index * LINE_HEIGHT
               + (LINE_HEIGHT - char_info.height)
               + translateY
@@ -366,9 +364,10 @@ class HommMessageGenerator {
     }
   }
 
-  getLinesForTextCount() {
-    this.lines_for_text_count = (this.getContentHeight() - (this.isButtonsVisible() ? (BUTTON_SIZE[1] + BUTTON_MARGIN) : 0)) / LINE_HEIGHT;
-    this.lines_for_text_count = Math.round(this.lines_for_text_count);
+  get linesForTextCount() {
+    return Math.round(
+      (this.getContentHeight() - (this.isButtonsVisible() ? (BUTTON_SIZE[1] + BUTTON_MARGIN) : 0)) / LINE_HEIGHT
+    )
   }
 
   widenPopupIfNeeded() {

@@ -108,7 +108,7 @@ class HommMessageGenerator {
   }
 
   getContentWidth() {
-    return this.getPopupWidth() - this.getPadding("left") - this.getPadding("right");
+    return this.getPopupWidth() - this.paddingLeft - this.paddingRight;
   }
 
   getPopupHeight() {
@@ -116,7 +116,7 @@ class HommMessageGenerator {
   }
 
   getContentHeight() {
-    return this.getPopupHeight() - this.getPadding("top") - this.getPadding("bottom");
+    return this.getPopupHeight() - this.paddingTop - this.paddingBottom;
   }
 
   get lineOffsetX() {
@@ -128,6 +128,25 @@ class HommMessageGenerator {
     //   return this.lines_offset[1] + 18
     // }
     // return this.lines_offset[1];
+  }
+
+  get paddingTop() {
+    return PADDING.top + HORIZONTAL_BORDER_HEIGHT
+  }
+  get paddingRight() {
+    if (this.scroll_visible) {
+      return PADDING.right_with_scroll + SCROLL_MARGINS.right + SCROLL_SIDE + VERTICAL_BORDER_WIDTH
+    }
+    return PADDING.right + VERTICAL_BORDER_WIDTH
+  }
+  get paddingBottom() {
+    return PADDING.bottom + HORIZONTAL_BORDER_HEIGHT
+  }
+  get paddingLeft() {
+    if (this.scroll_visible) {
+      return PADDING.left_with_scroll + VERTICAL_BORDER_WIDTH
+    }
+    return PADDING.left + VERTICAL_BORDER_WIDTH
   }
   // endregion
 
@@ -315,9 +334,9 @@ class HommMessageGenerator {
           }
 
           if(typeof char_info.width !== "undefined" && typeof char_info.height !== "undefined") {
-            var x_to_draw = this.getPadding("left") + current_x + this.lineOffsetX;
+            var x_to_draw = this.paddingLeft + current_x + this.lineOffsetX;
             var y_to_draw =
-              this.getPadding("top")
+              this.paddingTop
               + Math.floor((this.lines_for_text_count - this.text_by_lines.length)/2) * LINE_HEIGHT
               + line_index * LINE_HEIGHT
               + (LINE_HEIGHT - char_info.height)
@@ -364,7 +383,7 @@ class HommMessageGenerator {
       }
     }
 
-    maximum_string_width += this.getPadding("left") + this.getPadding("right")
+    maximum_string_width += this.paddingLeft + this.paddingRight
     // добавляем padding, ведь мы будем увеличивать общую длину, которая включает его в себя
     // нынешняя система PopupWidth — полная фигня
 
@@ -376,7 +395,7 @@ class HommMessageGenerator {
   setPopupHeight() {
     var proposed_height = 0;
     var text_height = this.text_by_lines.length * LINE_HEIGHT;
-    var distractor = this.getPadding("top") + this.getPadding("bottom") + (this.isButtonsVisible() ? BUTTON_SIZE[1] : 0);
+    var distractor = this.paddingTop + this.paddingBottom + (this.isButtonsVisible() ? BUTTON_SIZE[1] : 0);
     for(var i=1;i<6;i++) {
       proposed_height = BORDER_SIZE * i - distractor;
       if (proposed_height > text_height) {
@@ -743,7 +762,7 @@ class HommMessageGenerator {
 
     // buttons
     var buttons_number = ((this.buttons_show.ok) ? 1 : 0) + ((this.buttons_show.cancel) ? 1 : 0);
-    var button_y = this.getPopupHeight() - BUTTON_SIZE[1] - this.getPadding("bottom");
+    var button_y = this.getPopupHeight() - BUTTON_SIZE[1] - this.paddingBottom;
     if(this.buttons_show.ok) {
       var ok_x;
       if(buttons_number == 1) {
@@ -787,24 +806,10 @@ class HommMessageGenerator {
     }
   }
 
-  getPadding(which) {
-    var padding_to_return = PADDING[which];
-    if(this.scroll_visible && which == "right") {
-      padding_to_return = PADDING.right_with_scroll + SCROLL_MARGINS.right + SCROLL_SIDE;
-    }
-    if(this.scroll_visible && which == "left") {
-      padding_to_return = PADDING.left_with_scroll;
-    }
-    var border_size = (which == "top" || which == "bottom")
-      ? HORIZONTAL_BORDER_HEIGHT
-      : VERTICAL_BORDER_WIDTH;
-    return padding_to_return + border_size;
-  }
-
   drawScroll() {
     var scroll_x = this.getPopupWidth() - VERTICAL_BORDER_WIDTH - SCROLL_SIDE - SCROLL_MARGINS.right;
     var scroll_start_y = HORIZONTAL_BORDER_HEIGHT + SCROLL_MARGINS.top;
-    var scroll_end_y = this.getPopupHeight() - this.getPadding("bottom") - (this.isButtonsVisible() ? (BUTTON_SIZE[1] + SCROLL_MARGINS.bottom) : 0);
+    var scroll_end_y = this.getPopupHeight() - this.paddingBottom - (this.isButtonsVisible() ? (BUTTON_SIZE[1] + SCROLL_MARGINS.bottom) : 0);
     // top arrow
     this.context.drawImage(
       this.sprite,

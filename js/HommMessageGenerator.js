@@ -297,8 +297,6 @@ class HommMessageGenerator {
   }
 
   drawText() {
-    this.getLinesForTextCount();
-
     for(var line_index=0;line_index<this.text_by_lines.length;line_index++) {
       var text_line = this.text_by_lines[line_index];
       var current_x = 0;

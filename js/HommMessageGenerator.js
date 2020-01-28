@@ -89,7 +89,7 @@ class HommMessageGenerator {
     this.breakInputIntoWordsAndSpaces();
 
     this.findMessageWindowSize();
-    this.checkMaximumPopupWidth();
+    this.widenPopupIfNeeded();
 
     this.splitTextToLines(true); // сначала попробуем разбить текст со скроллом
                                  // если со скроллом текста маловато, запустится рекурсия без скролла
@@ -295,7 +295,7 @@ class HommMessageGenerator {
     // return this.lines_offset[1];
   }
 
-  checkMaximumPopupWidth() {
+  widenPopupIfNeeded() {
     var maximum_string_width = 0;
 
     for(var i=0;i<this.split_words.length;i++) {

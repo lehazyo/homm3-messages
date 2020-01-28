@@ -12,16 +12,14 @@ class HommMessageGeneratorNodeBindings extends HommMessageGenerator {
     this.context = this.canvas.getContext('2d')
 
     this.sprite = null
-    Promise.all([
-      this.loadSprite(),
-    ])
-      .then(() => {
-        this.ready = true
-      })
+    this.loadSprite()
   }
 
-  async loadSprite() {
-    this.sprite = await loadImage(fs.readFileSync(path.join(__dirname, './img/sprite.png')))
+  loadSprite() {
+    loadImage(fs.readFileSync(path.join(__dirname, './img/sprite.png')))
+      .then((img) => {
+        this.sprite = img
+      })
   }
 
   setCanvasSize() {

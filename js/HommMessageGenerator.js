@@ -237,6 +237,7 @@ class HommMessageGenerator {
       : MAX_TEXT_LINES_NO_BUTTONS;
 
     for(var i=0;i<this.split_words.length;i++) {
+      // todo переделать, ну как бы выходит из цикла, но нафига так поздно? потом и так обрезается лишнее
       if(this.text_by_lines.length > max_text_lines) {
         break;
       }
@@ -288,11 +289,11 @@ class HommMessageGenerator {
       this.text_by_lines.push(current_line);
     }
 
-    if(text_has_scroll && (this.text_by_lines.length <= max_text_lines || (this.message_size[0] < MAX_WIDTH && this.message_size[1] < MAX_HEIGHT))) {
-      this.splitTextToLines(false);
-    } else {
-      this.text_by_lines.splice(max_text_lines, this.text_by_lines.length - max_text_lines);
+    if(text_has_scroll && (this.text_by_lines.length <= max_text_lines)) {
+      return this.splitTextToLines(false);
     }
+
+    this.text_by_lines.splice(max_text_lines, this.text_by_lines.length - max_text_lines);
 
     this.setPopupHeight();
   }

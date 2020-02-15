@@ -766,6 +766,10 @@ class HommMessageGenerator {
    * @return {undefined}
    */
   getPadding(which) {
+    if(which == "bottom" && !this.isButtonsVisible()) {
+      return this.getPadding("top");
+    }
+
     var padding_to_return = (typeof this.message_size.padding === "undefined" || typeof this.message_size.padding[which] === "undefined")
       ? this.padding[which]
       : this.message_size.padding[which];
@@ -933,11 +937,21 @@ class HommMessageGenerator {
   }
 
   getLetterY(line_index, char_info) {
-    var y_to_draw = 
+    var y_to_draw = 0;
+
+    y_to_draw = 
+      line_index * this.line_height
+      + (this.line_height - char_info.height) // positioning regular char relative to line
+    ;
+
+    if(!this.isButtonsVisible()) {
+      y_to_draw += Math.round((this.getPopupHeight() - this.text_by_lines.length * this.line_height)/2) - 7; // dunno what is 7 but it works :[
+      return y_to_draw;
+    }
+
+    y_to_draw += 
       this.getPadding("top")
       - (this.text_by_lines.length - 1) * (this.line_height / 2) // text moves up half-line every line (first line does not move)
-      + line_index * this.line_height
-      + (this.line_height - char_info.height) // positioning regular char relative to line
     ;
 
     // special char y position
@@ -947,10 +961,6 @@ class HommMessageGenerator {
           
     if (this.message_size.height > 2) {
       y_to_draw += 14 + (this.message_size.height - 2) * this.line_height;
-    }
-
-    if(!this.isButtonsVisible()) {
-      y_to_draw += Math.round(this.button_size[1] / 2);
     }
 
     // sorry, I don't care anymore.............
@@ -976,7 +986,6 @@ class HommMessageGenerator {
     if (this.raise_by_half_line) {
       y_to_draw -= this.line_height / 2;
     }
-
 
     return y_to_draw;
   }

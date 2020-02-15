@@ -3,13 +3,9 @@ class HommMessageGenerator {
     this.max_width = 10;
     this.max_height = 5;
     this.message_size_index = 0;
-    this.message_size = null; // will be set in splitTextToLinesV2
+    this.message_size = null; // will be set in splitTextToLines
     this.forced_width = 0;
     this.forced_height = 0;
-
-    this.max_text_lines_no_buttons = 13;
-    this.max_text_lines = 11;
-    this.lines_for_text_count = 0;
 
     this.border_size = 64;
     this.bg_size = 256;
@@ -39,8 +35,10 @@ class HommMessageGenerator {
     this.shadow_offset = [8, 8]; // отступ тени (всех её двух уровней)
 
     this.padding = { // отступы в пикселях
-      "top": 17,
+      "top": 11,
       "bottom": 15,
+      "right": 11,
+      "left": 10
     };
 
     this.scroll_side = 16;
@@ -135,6 +133,7 @@ class HommMessageGenerator {
     var resize_at = false;
     var current_line_with_block = "";
     var current_line_with_block_width = 0;
+    var last_line_width = 0;
 
     for(
       this.message_size_index = 0;
@@ -227,7 +226,14 @@ class HommMessageGenerator {
       if(current_line.length) {
         this.text_by_lines.push(current_line);
 
-        var last_line_width = this.getStringWidth(current_line.join(""));
+        last_line_width = this.getStringWidth(current_line.join(""));
+
+        resize_at = this.getResizeAt();
+        if(resize_at && last_line_width >= resize_at) {
+          continue; // trying next message size
+        }
+
+        half_at = this.getHalfAt();
         this.raise_by_half_line = (half_at && last_line_width >= half_at);
       }
 
@@ -253,8 +259,6 @@ class HommMessageGenerator {
   }
 
   drawText() {
-    this.getLinesForTextCount();
-
     for(var line_index=0;line_index<this.text_by_lines.length;line_index++) {
       var text_line = this.text_by_lines[line_index];
       var current_x = 0;
@@ -262,7 +266,7 @@ class HommMessageGenerator {
       if(!this.scroll_visible) { // text align: center
         var joint_line = text_line.join("");
         var joint_line_width = this.getStringWidth(joint_line);
-        current_x = Math.round((this.getPopupWidthWithoutPadding() - joint_line_width) / 2);
+        current_x = Math.floor((this.getPopupWidthWithoutPadding() - joint_line_width) / 2);
       } else {
         // render scroll
         this.drawScroll();
@@ -279,24 +283,14 @@ class HommMessageGenerator {
             continue;
           }
           var char_info = this.getCharInfo(char);
-          var translateY = 0;
-          if(typeof char_info.translateY !== "undefined") {
-            translateY = char_info.translateY;
-          }
-          
+
           if(typeof char_info.marginLeft !== "undefined" && (word_index != 0 || char_index != 0 || char_info.marginLeft > 0)) {
             current_x += char_info.marginLeft;
           }
 
           if(typeof char_info.width !== "undefined" && typeof char_info.height !== "undefined") {
             var x_to_draw = this.getPadding("left") + current_x;
-            var y_to_draw = 
-              this.getPadding("top") 
-              + Math.floor((this.lines_for_text_count - this.text_by_lines.length)/2) * this.line_height
-              + line_index * this.line_height 
-              + (this.line_height - char_info.height) 
-              + translateY
-              + (this.raise_by_half_line ? -9 : 0);
+            var y_to_draw = this.getLetterY(line_index, char_info);
 
 
             this.context.drawImage(
@@ -323,8 +317,9 @@ class HommMessageGenerator {
   }
 
   getLinesForTextCount() {
-    this.lines_for_text_count = (this.getPopupHeightWithoutPadding() - (this.isButtonsVisible() ? (this.button_size[1] + this.button_margin) : 0)) / this.line_height;
-    this.lines_for_text_count = Math.round(this.lines_for_text_count);
+    var lines_for_text_count = (this.getPopupHeightWithoutPadding() - (this.isButtonsVisible() ? (this.button_size[1] + this.button_margin) : 0)) / this.line_height;
+    lines_for_text_count = Math.floor(lines_for_text_count);
+    return lines_for_text_count;
   }
 
 
@@ -771,12 +766,9 @@ class HommMessageGenerator {
    * @return {undefined}
    */
   getPadding(which) {
-    var padding_to_return;
-    if(typeof this.message_size.padding[which] === "undefined") {
-      padding_to_return = this.padding[which];
-    } else {
-      padding_to_return = this.message_size.padding[which];
-    }
+    var padding_to_return = (typeof this.message_size.padding === "undefined" || typeof this.message_size.padding[which] === "undefined")
+      ? this.padding[which]
+      : this.message_size.padding[which];
     var border_size = (which == "top" || which == "bottom") 
       ? this.horizontal_border_height
       : this.vertical_border_width;
@@ -938,6 +930,55 @@ class HommMessageGenerator {
 
   getResizeAt() {
     return this.getResizeOrHalfAt("resize");
+  }
+
+  getLetterY(line_index, char_info) {
+    var y_to_draw = 
+      this.getPadding("top")
+      - (this.text_by_lines.length - 1) * (this.line_height / 2) // text moves up half-line every line (first line does not move)
+      + line_index * this.line_height
+      + (this.line_height - char_info.height) // positioning regular char relative to line
+    ;
+
+    // special char y position
+    if(typeof char_info.translateY !== "undefined") {
+      y_to_draw += char_info.translateY;
+    }
+          
+    if (this.message_size.height > 2) {
+      y_to_draw += 14 + (this.message_size.height - 2) * this.line_height;
+    }
+
+    if(!this.isButtonsVisible()) {
+      y_to_draw += Math.round(this.button_size[1] / 2);
+    }
+
+    // sorry, I don't care anymore.............
+    if(this.message_size.width == 5) {
+      if (this.text_by_lines.length >= 9) {
+        y_to_draw += this.line_height;
+      } else if (this.text_by_lines.length >= 5) {
+        y_to_draw += this.line_height / 2;
+      }
+    } else if(this.message_size.width == 7) {
+      if (this.text_by_lines.length >= 9) {
+        y_to_draw += this.line_height;
+      } else if (this.text_by_lines.length >= 7) {
+        y_to_draw += this.line_height / 2;
+      }
+    } else if(this.message_size.width == 10) {
+      if (this.text_by_lines.length >= 9) {
+        y_to_draw += this.line_height / 2;
+      }
+    }
+
+    // raise by half-line
+    if (this.raise_by_half_line) {
+      y_to_draw -= this.line_height / 2;
+    }
+
+
+    return y_to_draw;
   }
 }
 
@@ -1955,41 +1996,7 @@ HommMessageGenerator.letters = {
     "x": 443,
     "y": 283
   },
-
 }
-
-
-// количество ячеек 64x64 по горизонтали и вертикали в зависимости от числа символов
-HommMessageGenerator.breakpoints = [
-  {
-    "at" : 0,
-    "width": 4,
-    "height": 2
-  },
-  {
-    "at": 28,
-    "width": 5,
-    "height": 2
-  },
-  {
-    "at": 35,
-    "width": 5,
-    "height": 3
-  },
-  {
-    "at": 127,
-    "width": 5,
-    "height": 4
-  },
-  {
-    "at": 225,
-    "width": 7
-  },
-  {
-    "at": 520,
-    "width": 10
-  }
-];
 
 HommMessageGenerator.colors = {
   "red": {
@@ -2047,167 +2054,144 @@ HommMessageGenerator.sizes = [
     "width": 4,
     "height": 2,
     "max_text_lines": 1,
-    "text_max_width": 202, // dunno if i need this too
-    "last_line_width": 202,
-    "padding": {
-      "right": 13,
-      "left": 13
-    }
+    "last_line_width": 202
   },
   {
     "width": 5,
     "height": 2,
     "max_text_lines": 1,
-    "text_max_width": 250,
     "padding": {
-      "right": 21,
-      "left": 21
+      "right": 19,
+      "left": 18
     }
   },
   {
     "width": 5,
     "height": 3,
     "max_text_lines": 4,
-    "text_max_width": 266,
     "lines": {
       2: {
-        "half": 234
+        "half": 242
       },
       3: {
-        "half": 218
+        "half": 222
       },
       4: {
-        "resize": 202
+        "resize": 206
       }
     },
-    "padding": {
-      "right": 13,
-      "left": 13
-    }
   },
   {
     "width": 5,
     "height": 4,
     "max_text_lines": 8,
-    "text_max_width": 266,
     "lines": {
       5: {
-        "half": 186
+        "half": 190
       },
       6: {
-        "half": 170
+        "half": 174
       },
       7: {
-        "half": 154
+        "half": 158
       },
       8: {
-        "resize": 138
+        "resize": 142
       }
     },
     "padding": {
-      "right": 13,
-      "left": 13
+      "top": 16,
     }
   },
   {
     "width": 5,
     "height": 5,
     "max_text_lines": 9,
-    "text_max_width": 266,
     "lines": {
       9: {
-        "resize": 122
+        "resize": 126
       }
     },
     "padding": {
-      "right": 13,
-      "left": 13
+      "top": 21,
     }
   },
   {
     "width": 7,
     "height": 4,
     "max_text_lines": 8,
-    "text_max_width": 394,
     "lines": {
       7: {
-        "half": 282
+        "half": 286
       },
       8: {
-        "resize": 266
+        "resize": 270
       }
     },
     "padding": {
-      "right": 11,
-      "left": 13
+      "top": 16
     }
   },
   {
     "width": 7,
     "height": 5,
-    "text_max_width": 394,
     "max_text_lines": 11,
     "lines": {
       9: {
-        "half": 250
+        "half": 254
       },
       10: {
-        "half": 234
+        "half": 238
       },
       11: {
-        "resize": 218
+        "resize": 222
       }
     },
     "padding": {
-      "right": 11,
-      "left": 13
+      "top": 21
     }
   },
   {
     "width": 10,
     "height": 4,
-    "text_max_width": 586,
     "max_text_lines": 8,
     "lines": {
       8: {
-        "resize": 458
+        "resize": 466
       },
     },
     "padding": {
-      "right": 13,
-      "left": 13
+      "top": 25
     }
   },
   {
     "width": 10,
     "height": 5,
-    "text_max_width": 586,
     "max_text_lines": 11,
     "lines": {
       9: {
-        "half": 442
+        "half": 446
       },
       10: {
-        "half": 426
+        "half": 430
       },
       11: {
-        "resize": 410
+        "resize": 414
       }
     },
     "padding": {
-      "right": 13,
-      "left": 13
+      "top": 30
     }
   },
   {
     "width": 10,
     "height": 5,
     "scroll": true,
-    "text_max_width": 562,
     "max_text_lines": 11,
     "padding": {
+      "top": 29,
       "right": 38,
-      "left": 12
+      "left": 11
     }
   }
 ];

@@ -936,6 +936,13 @@ class HommMessageGenerator {
     return this.getResizeOrHalfAt("resize");
   }
 
+
+  /**
+   * Returns Y position of letter on canvas for rendering
+   * @param {number} line_index
+   * @param {object} char_info
+   * @return {number}
+   */
   getLetterY(line_index, char_info) {
     var y_to_draw = 0;
 
@@ -943,6 +950,10 @@ class HommMessageGenerator {
       line_index * this.line_height
       + (this.line_height - char_info.height) // positioning regular char relative to line
     ;
+    // special char y position
+    if(typeof char_info.translateY !== "undefined") {
+      y_to_draw += char_info.translateY;
+    }
 
     if(!this.isButtonsVisible()) {
       y_to_draw += Math.round((this.getPopupHeight() - this.text_by_lines.length * this.line_height)/2) - 7; // dunno what is 7 but it works :[
@@ -953,11 +964,6 @@ class HommMessageGenerator {
       this.getPadding("top")
       - (this.text_by_lines.length - 1) * (this.line_height / 2) // text moves up half-line every line (first line does not move)
     ;
-
-    // special char y position
-    if(typeof char_info.translateY !== "undefined") {
-      y_to_draw += char_info.translateY;
-    }
           
     if (this.message_size.height > 2) {
       y_to_draw += 14 + (this.message_size.height - 2) * this.line_height;

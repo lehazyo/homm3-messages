@@ -32,6 +32,7 @@ class HommMessageGenerator {
       this.use_color = false;
     }
 
+    this.draw_shadow = false;
     this.shadow_offset = [8, 8]; // отступ тени (всех её двух уровней)
 
     this.padding = { // отступы в пикселях
@@ -421,7 +422,7 @@ class HommMessageGenerator {
    * @return {number}
    */
   getCanvasWidth() {
-    return this.getPopupWidth() + this.shadow_offset[0];
+    return this.getPopupWidth() + (this.draw_shadow ? this.shadow_offset[0] : 0);
   }
 
 
@@ -430,7 +431,7 @@ class HommMessageGenerator {
    * @return {number}
    */
   getCanvasHeight() {
-    return this.getPopupHeight() + this.shadow_offset[1];
+    return this.getPopupHeight() + (this.draw_shadow ? this.shadow_offset[1] : 0);
   }
 
 
@@ -536,7 +537,9 @@ class HommMessageGenerator {
    * @return {undefined}
    */
   drawMessageWindow() {
-    this.drawShadow();
+    if(this.draw_shadow) {
+      this.drawShadow();
+    }
 
     if(this.use_color) {
       var color_info = HommMessageGenerator.colors[this.color];
@@ -596,7 +599,7 @@ class HommMessageGenerator {
     // horizontal borders
     for(var i=1;i<this.message_size.width-1;i++) {
       var x_to_set = i * this.border_size;
-      var y_to_set = this.getCanvasHeight() - this.horizontal_border_height - this.shadow_offset[1];
+      var y_to_set = this.getCanvasHeight() - this.horizontal_border_height - (this.draw_shadow ? this.shadow_offset[1] : 0);
       // upper
       this.context.drawImage(
         this.sprite, 
@@ -655,7 +658,7 @@ class HommMessageGenerator {
 
     // vertical
     for(var i=1;i<this.message_size.height-1;i++) {
-      var right_x_to_set = this.getCanvasWidth() - this.vertical_border_width - this.shadow_offset[0];
+      var right_x_to_set = this.getCanvasWidth() - this.vertical_border_width - (this.draw_shadow ? this.shadow_offset[0] : 0);
       var y_to_set = i * this.border_size;
       // left
       this.context.drawImage(
@@ -877,6 +880,7 @@ class HommMessageGenerator {
     document.querySelector(".about-icon.close").addEventListener("click", function() {
       document.querySelector(".left-panel").classList.remove("about");
     });
+    document.querySelector(".download-button").addEventListener("mousedown", this.prepareCurrentImageDownload.bind(this));
   }
 
 
@@ -902,8 +906,14 @@ class HommMessageGenerator {
    * @return {undefined}
    */
   toggleCheckbox(button_id) {
-    var new_value = !this.buttons_show[button_id];
-    this.buttons_show[button_id] = new_value;
+    var new_value;
+    if(button_id == "shadow") {
+      new_value = !this.draw_shadow;
+      this.draw_shadow = new_value;
+    } else {
+      var new_value = !this.buttons_show[button_id];
+      this.buttons_show[button_id] = new_value;
+    }
 
     document.querySelector(".checkbox-wrapper[data-button='" + button_id + "'] .checkbox-icon").classList[new_value ? "add" : "remove"]("checked");
 
@@ -994,6 +1004,16 @@ class HommMessageGenerator {
     }
 
     return y_to_draw;
+  }
+
+  /**
+   * Starts downloading of current image as file
+   */
+  prepareCurrentImageDownload() {
+    var download_button = document.querySelector(".download-button");
+    var current_date = new Date();
+    download_button.download = "HoMM3-message-" + (current_date.getTime()) + ".png";
+    download_button.href = this.canvas.toDataURL();
   }
 }
 

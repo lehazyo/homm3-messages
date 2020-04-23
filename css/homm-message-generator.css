@@ -47,6 +47,12 @@ body {
   display: none;
 }
 
+.controls-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 .canvas-wrapper {
   display: flex;
   align-items: center;
@@ -67,7 +73,7 @@ body {
   background: rgba(0, 0, 0,.6);
   color: #fff;
   font-family: Times New Roman, serif;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 18px;
 }
 
@@ -76,7 +82,20 @@ body {
 }
 
 .input-wrapper {
-  margin-top: 40px;
+  margin-top: 30px;
+}
+
+.input-wrapper-message {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-wrapper-checkboxes {
+  width: 200px;
+}
+
+.input-wrapper-download {
+  display: flex;
 }
 
 .input-wrapper:first-child {
@@ -86,11 +105,14 @@ body {
 .colors-wrapper {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  width: 240px;
 }
 
 .color-item {
+  flex-shrink: 0;
   vertical-align: top;
-  width: 59px;
+  width: 60px;
   height: 64px;
   border: 1px solid transparent;
   cursor: pointer;
@@ -128,16 +150,16 @@ body {
 
 .buttons-wrapper {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: -10px;
 }
 
 .checkbox-wrapper {
   display: flex;
-  margin-left: 40px;
   cursor: pointer;
   user-select: none;
-}
-.checkbox-wrapper:first-child {
-  margin-left: 0;
+  margin-top: 10px;
 }
 
 .checkbox-icon {
@@ -174,4 +196,44 @@ body {
 }
 .left-panel.about .about-text {
   display: block;
+}
+
+.homm-button {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 48px;
+  padding: 0 16px;
+  background-image: url(../img/button-bg.png);
+  background-color: #2d1d0f;
+  border: 1px solid #ad8e42;
+  color: #ffe98c;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.homm-button::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  left: 1px;
+  border: 2px solid rgba(0, 0, 0, .8);
+  border-top: 2px solid rgba(255, 255, 255, .5);
+  border-left: 2px solid rgba(255, 255, 255, .2);
+}
+
+.homm-button:active {
+  padding: 2px 15px 0 17px;
+  box-shadow: inset 1px 1px 0 #000;
+}
+
+.homm-button:active::before {
+  top: 2px;
+  left: 2px;
+  background-color: rgba(0, 0, 0, .1);
+  border-right-width: 1px;
+  border-bottom-width: 1px;
 }

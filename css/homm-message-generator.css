@@ -209,6 +209,7 @@ body {
   border: 1px solid #ad8e42;
   color: #ffe98c;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
   user-select: none;
 }

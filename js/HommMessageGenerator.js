@@ -1154,9 +1154,6 @@ HommMessageGenerator.letters = {
     "marginLeft": 1,
     "marginRight": -1
   },
-  "—": {
-    "same_as": "–"
-  },
   "$": {
     "width": 6,
     "height": 12,
@@ -2031,6 +2028,370 @@ HommMessageGenerator.letters = {
     "x": 443,
     "y": 283
   },
+  "{": {
+    "width": 3,
+    "height": 11,
+    "x": 262,
+    "y": 264,
+  }, 
+  "}": {
+    "width": 3,
+    "height": 11,
+    "x": 265,
+    "y": 264,
+  }, 
+  "Ђ": {
+    "width": 10,
+    "height": 11,
+    "x": 0,
+    "y": 304,
+    "translateY": 1
+  }, 
+  "Ѓ": {
+    "width": 8,
+    "height": 13,
+    "x": 10,
+    "y": 301,
+  }, 
+  "‚": {
+    "width": 3,
+    "height": 4,
+    "x": 29,
+    "y": 311,
+    "translateY": 1
+  }, 
+  "ѓ": {
+    "width": 7,
+    "height": 10,
+    "x": 22,
+    "y": 304,
+  }, 
+  "„": {
+    "width": 6,
+    "height": 4,
+    "x": 29,
+    "y": 311,
+    "translateY": 1
+  }, 
+  "…": {
+    "width": 10,
+    "height": 2,
+    "x": 35,
+    "y": 312,
+  }, 
+  "†": {
+    "width": 6,
+    "height": 12,
+    "x": 45,
+    "y": 304,
+    "translateY": 2
+  }, 
+  "‡": {
+    "width": 6,
+    "height": 12,
+    "x": 51,
+    "y": 304,
+    "translateY": 2
+  }, 
+  "€": {
+    "width": 8,
+    "height": 10,
+    "x": 57,
+    "y": 304,
+  }, 
+  "‰": {
+    "width": 15,
+    "height": 10,
+    "x": 65,
+    "y": 304,
+  }, 
+  "Љ": {
+    "width": 13,
+    "height": 10,
+    "x": 80,
+    "y": 304,
+  }, 
+  "‹": {
+    "width": 3,
+    "height": 4,
+    "x": 297,
+    "y": 309,
+  }, 
+  "Њ": {
+    "width": 14,
+    "height": 10,
+    "x": 96,
+    "y": 304,
+  }, 
+  "Ќ": {
+    "width": 10,
+    "height": 13,
+    "x": 110,
+    "y": 301,
+  }, 
+  "Ћ": {
+    "width": 10,
+    "height": 10,
+    "x": 120,
+    "y": 304,
+  }, 
+  "Џ": {
+    "width": 10,
+    "height": 12,
+    "x": 130,
+    "y": 304,
+    "translateY": 2
+  }, 
+  "ђ": {
+    "width": 7,
+    "height": 11,
+    "x": 140,
+    "y": 304,
+    "translateY": 1
+  }, 
+  "‘": {
+    "width": 3,
+    "height": 4,
+    "x": 29,
+    "y": 311,
+    "translateY": -6
+  }, 
+  "’": {
+    "same_as": "‘"
+  }, 
+  "“": {
+    "width": 6,
+    "height": 4,
+    "x": 29,
+    "y": 311,
+    "translateY": -6
+  }, 
+  "”": {
+    "same_as": "“"
+  }, 
+  "•": {
+    "width": 5,
+    "height": 5,
+    "x": 147,
+    "y": 306,
+    "translateY": -3
+  },
+  "—": {
+    "width": 10,
+    "height": 2,
+    "x": 159,
+    "y": 309,
+    "translateY": -3
+  }, 
+  "˜": {
+    "width": 8,
+    "height": 9,
+    "x": 169,
+    "y": 305,
+  }, 
+  "™": {
+    "width": 13,
+    "height": 6,
+    "x": 177,
+    "y": 304,
+    "translateY": -4
+  }, 
+  "љ": {
+    "width": 10,
+    "height": 7,
+    "x": 190,
+    "y": 307,
+  }, 
+  "›": {
+    "width": 3,
+    "height": 4,
+    "x": 381,
+    "y": 308,
+    "translateY": -1
+  }, 
+  "њ": {
+    "width": 11,
+    "height": 7,
+    "x": 203,
+    "y": 307,
+  }, 
+  "ќ": {
+    "width": 8,
+    "height": 10,
+    "x": 214,
+    "y": 304,
+  }, 
+  "ћ": {
+    "width": 8,
+    "height": 10,
+    "x": 222,
+    "y": 304,
+  }, 
+  "џ": {
+    "width": 8,
+    "height": 9,
+    "x": 230,
+    "y": 307,
+    "translateY": 2
+  }, 
+  "Ӯ": {
+    "width": 10,
+    "height": 15,
+    "x": 238,
+    "y": 302,
+    "translateY": 3
+  }, 
+  "ӯ": {
+    "width": 7,
+    "height": 13,
+    "x": 248,
+    "y": 305,
+    "translateY": 4
+  }, 
+  "Ј": {
+    "same_as": "J"
+  }, 
+  "¤": {
+    "width": 8,
+    "height": 8,
+    "x": 256,
+    "y": 305,
+    "translateY": -1
+  }, 
+  "Ґ": {
+    "width": 6,
+    "height": 11,
+    "x": 264,
+    "y": 303,
+  },
+  "¦": {
+    "same_as": "|"
+  }, 
+  "§": {
+    "width": 7,
+    "height": 12,
+    "x": 270,
+    "y": 304,
+    "translateY": 2
+  }, 
+  "©": {
+    "width": 11,
+    "height": 10,
+    "x": 277,
+    "y": 304,
+  }, 
+  "Є": {
+    "width": 9,
+    "height": 10,
+    "x": 288,
+    "y": 304,
+  }, 
+  "«": {
+    "width": 6,
+    "height": 4,
+    "x": 297,
+    "y": 309,
+    "translateY": -1
+  }, 
+  "¬": {
+    "width": 8,
+    "height": 4,
+    "x": 303,
+    "y": 307,
+    "translateY": -3
+  }, 
+  "®": {
+    "width": 11,
+    "height": 10,
+    "x": 311,
+    "y": 304,
+  }, 
+  "Ї": {
+    "width": 5,
+    "height": 12,
+    "x": 322,
+    "y": 302,
+  },
+  "°": {
+    "width": 5,
+    "height": 5,
+    "x": 327,
+    "y": 303,
+    "translateY": -5
+  },
+  "±": {
+    "width": 8,
+    "height": 10,
+    "x": 332,
+    "y": 303,
+  },
+  "І": {
+    "same_as": "I"
+  },
+  "і": {
+    "same_as": "i"
+  },
+  "ґ": {
+    "width": 5,
+    "height": 8,
+    "x": 340,
+    "y": 305,
+  },
+  "µ": {
+    "width": 6,
+    "height": 9,
+    "x": 345,
+    "y": 306,
+    "translateY": 2
+  },
+  "¶": {
+    "width": 7,
+    "height": 13,
+    "x": 351,
+    "y": 303,
+    "translateY": 3
+  },
+  "·": {
+    "width": 2,
+    "height": 2,
+    "x": 358,
+    "y": 309,
+    "translateY": -2
+  },
+  "№": {
+    "width": 15,
+    "height": 10,
+    "x": 360,
+    "y": 303,
+  },
+  "є": {
+    "width": 6,
+    "height": 7,
+    "x": 375,
+    "y": 306,
+  },
+  "»": {
+    "width": 6,
+    "height": 4,
+    "x": 381,
+    "y": 308,
+    "translateY": -1
+  },
+  "ј": {
+    "same_as": "j"
+  },
+  "Ѕ": {
+    "same_as": "S"
+  },
+  "ѕ": {
+    "same_as": "s"
+  },
+  "ї": {
+    "width": 5,
+    "height": 9,
+    "x": 387,
+    "y": 304,
+  }
 }
 
 HommMessageGenerator.colors = {

@@ -1,3 +1,3 @@
 (function() {
-  var generator = new HommMessageGenerator();
+  var generator = new HommMessageGeneratorDispatcher();
 }());

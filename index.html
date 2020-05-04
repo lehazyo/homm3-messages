@@ -36,7 +36,25 @@
           <textarea id="input">Write your text in the left panel</textarea>
         </div>
 
-        <div class="input-wrapper">
+        <div class="input-wrapper input-wrapper-style">
+          <div class="input-header">
+            Style:
+          </div>
+          <div class="radios-wrapper radios-wrapper-style">
+            <label class="radio-wrapper homm-radio-label">
+              <input type="radio" name="style" value="homm2" />
+              <span class="homm-radio-icon"></span>
+              <span class="homm-radio-text">HoMM2</span>
+            </label>
+            <label class="radio-wrapper homm-radio-label">
+              <input type="radio" name="style" value="homm3" checked />
+              <span class="homm-radio-icon"></span>
+              <span class="homm-radio-text">HoMM3</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="input-wrapper input-wrapper-colors homm3-only">
           <div class="input-header">
             Player color:
           </div>
@@ -57,20 +75,41 @@
             Include:
           </div>
           <div class="buttons-wrapper">
-            <div data-button="ok" class="checkbox-wrapper">
-              <div class="checkbox-icon checked"></div>
+            <label class="checkbox-wrapper">
+              <input type="checkbox" name="ok" checked="checked" />
+              <div class="checkbox-icon"></div>
               <div class="checkbox-label">Okay button</div>
-            </div>
+            </label>
 
-            <div data-button="cancel" class="checkbox-wrapper">
+            <label class="checkbox-wrapper">
+              <input type="checkbox" name="cancel" />
               <div class="checkbox-icon"></div>
               <div class="checkbox-label">Cancel button</div>
-            </div>
+            </label>
 
-            <div data-button="shadow" class="checkbox-wrapper">
+            <label class="checkbox-wrapper">
+              <input type="checkbox" name="shadow" />
               <div class="checkbox-icon"></div>
               <div class="checkbox-label">Shadow</div>
-            </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="input-wrapper input-wrapper-homm2-theme homm2-only">
+          <div class="input-header">
+            Theme:
+          </div>
+          <div class="radios-wrapper">
+            <label class="radio-wrapper homm-radio-label">
+              <input type="radio" name="homm2-theme" value="good" checked />
+              <span class="homm-radio-icon"></span>
+              <span class="homm-radio-text">Good</span>
+            </label>
+            <label class="radio-wrapper homm-radio-label">
+              <input type="radio" name="homm2-theme" value="evil" />
+              <span class="homm-radio-icon"></span>
+              <span class="homm-radio-text">Evil</span>
+            </label>
           </div>
         </div>
 
@@ -109,8 +148,9 @@
     </div>
   </div>
 
-  <!--<script src="js/test_texts.js"></script>-->
-  <script src="js/HommMessageGenerator.js"></script>
+  <script src="js/HommMessageGeneratorDispatcher.js"></script>
+  <script src="js/Homm2MessageGenerator.js"></script>
+  <script src="js/Homm3MessageGenerator.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>

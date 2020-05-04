@@ -1,5 +1,11 @@
-class HommMessageGenerator {
-  constructor() {
+class Homm3MessageGenerator {
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+
+    this.input = this.dispatcher.input;
+    this.canvas = this.dispatcher.canvas;
+    this.context = this.dispatcher.context;
+
     this.max_width = 10;
     this.max_height = 5;
     this.message_size_index = 0;
@@ -19,20 +25,10 @@ class HommMessageGenerator {
     this.vertical_color_width = 4;
     
     this.color_corner_size = 56;
-    this.color = "red";
-    this.use_color = true;
     
-    this.buttons_show = {
-      "ok": true,
-      "cancel": false
-    };
     this.button_size = [66, 32];
     this.button_margin = 16;
-    if(this.color === "" || this.color == false || this.color == null || typeof this.color === "undefined") {
-      this.use_color = false;
-    }
 
-    this.draw_shadow = false;
     this.shadow_offset = [8, 8]; // отступ тени (всех её двух уровней)
 
     this.padding = { // отступы в пикселях
@@ -51,74 +47,36 @@ class HommMessageGenerator {
     this.scroll_visible = false;
     this.lines_needed_to_show_scroll = 12; // how many lines of text you need for scroll to appear
 
-    this.text_by_lines = []; // разбитый на строки текст
-    this.split_words = []; // текст, разбитый по словам
+    this.text_by_lines = []; // text split into lines
+
+    this.is_current_renderer = false;
+    this.ready_to_render = false;
+    this.renderInterval = null;
 
     this.sprite = new Image();
-    this.sprite.src = "img/sprite.png";
-
-    this.input = document.getElementById("input");
-    this.input.addEventListener("input", this.render.bind(this));
-    this.canvas = document.getElementById("canvas");
-    this.context = this.canvas.getContext("2d");
-
-    this.initControls();
+    this.sprite.src = "img/homm3-sprite.png";
 
     this.sprite.onload = function() {
-      this.render();
+      this.ready_to_render = true;
     }.bind(this);
   }
 
   render() {
+    if(!this.is_current_renderer) {
+      return;
+    }
+
+    if(!this.ready_to_render) {
+      this.renderInterval = setTimeout(this.dispatcher.render.bind(this.dispatcher), 100);
+      return;
+    }
+
     this.setDefaults();
-    this.breakInputIntoWordsAndSpaces();
-    /*
-    this.splitTextToLines(true); // сначала попробуем разбить текст со скроллом
-                                 // если со скроллом текста маловато, запустится рекурсия без скролла
-    */
+    this.checkForcedWidth();
     this.splitTextToLines();
     this.setCanvasSize();
     this.drawMessageWindow();
     this.drawText();
-  }
-
-  breakInputIntoWordsAndSpaces() {
-    var output = [];
-
-    var current_phase = "";
-    var current_sequence = "";
-
-    for(var i=0;i<this.getInputValueLength();i++) {
-      var char = this.getInputValue()[i];
-      var char_type = "";
-      if(char.match(/^[\n\r]$/)) {
-        char_type = "break";
-      } else if(char.match(/^\s$/)) {
-        char_type = "space";
-      } else {
-        char_type = "symbol";
-      }
-      if(current_phase != char_type) {
-        if(current_sequence !== "") {
-          output.push(current_sequence);
-          current_sequence = "";
-        }
-        current_phase = char_type;
-      }
-      current_sequence += char;
-      if(char_type == "break") {
-        output.push(char);
-        current_phase = char_type;
-        current_sequence = "";
-      }
-    }
-    if(current_sequence !== "") {
-      output.push(current_sequence);
-    }
-
-    this.split_words = output;
-
-    this.checkForcedWidth();
   }
 
   splitTextToLines() {
@@ -138,15 +96,15 @@ class HommMessageGenerator {
 
     for(
       this.message_size_index = 0;
-      this.message_size_index < HommMessageGenerator.sizes.length;
+      this.message_size_index < Homm3MessageGenerator.sizes.length;
       this.message_size_index++
     ) { // cycling through all possible sizes
       this.text_by_lines = [];
 
-      this.message_size = HommMessageGenerator.sizes[this.message_size_index];
+      this.message_size = Homm3MessageGenerator.sizes[this.message_size_index];
       this.scroll_visible = (typeof this.message_size.scroll !== "undefined" && this.message_size.scroll);
 
-      if(this.split_words.length === 0) {
+      if(this.dispatcher.split_words.length === 0) {
         break;
       }
 
@@ -156,8 +114,7 @@ class HommMessageGenerator {
       is_space_block = false;
       block = "";
 
-
-      for(var i=0;i<this.split_words.length;i++) {
+      for(var i=0;i<this.dispatcher.split_words.length;i++) {
         this.raise_by_half_line = false;
 
         half_at = this.getHalfAt();
@@ -167,7 +124,7 @@ class HommMessageGenerator {
 
         suitable_size_found = true;
 
-        block = this.split_words[i];
+        block = this.dispatcher.split_words[i];
         is_new_line = (block.match(/^[\n\r]+$/) !== null);
         is_space_block = (block.match(/^\s+$/) !== null && !is_new_line);
 
@@ -251,14 +208,6 @@ class HommMessageGenerator {
     }
   }
 
-  getInputValue() {
-    return this.input.value;
-  }
-
-  getInputValueLength() {
-    return this.getInputValue().length;
-  }
-
   drawText() {
     for(var line_index=0;line_index<this.text_by_lines.length;line_index++) {
       var text_line = this.text_by_lines[line_index];
@@ -280,7 +229,7 @@ class HommMessageGenerator {
         }
         for(var char_index=0;char_index<word.length;char_index++) {
           var char = word[char_index];
-          if(typeof HommMessageGenerator.letters[char] === "undefined") {
+          if(typeof Homm3MessageGenerator.letters[char] === "undefined") {
             continue;
           }
           var char_info = this.getCharInfo(char);
@@ -317,12 +266,6 @@ class HommMessageGenerator {
     }
   }
 
-  getLinesForTextCount() {
-    var lines_for_text_count = (this.getPopupHeightWithoutPadding() - (this.isButtonsVisible() ? (this.button_size[1] + this.button_margin) : 0)) / this.line_height;
-    lines_for_text_count = Math.floor(lines_for_text_count);
-    return lines_for_text_count;
-  }
-
 
   /**
    * Check if there is a line that has no word-breaks and forces window to become wider
@@ -330,8 +273,8 @@ class HommMessageGenerator {
   checkForcedWidth() {
     var maximum_string_width = 0;
 
-    for(var i=0;i<this.split_words.length;i++) {
-      var block = this.split_words[i];
+    for(var i=0;i<this.dispatcher.split_words.length;i++) {
+      var block = this.dispatcher.split_words[i];
       if(block.match(/^\s+$/)) { // только строка из пробелов совершает word-break, так что её не проверяем
         continue;
       }
@@ -352,7 +295,7 @@ class HommMessageGenerator {
   setPopupHeight() {
     var proposed_height = 0;
     var text_height = this.text_by_lines.length * this.line_height;
-    var subtractor = this.getPadding("top") + this.getPadding("bottom") + (this.isButtonsVisible() ? this.button_size[1] : 0);
+    var subtractor = this.getPadding("top") + this.getPadding("bottom") + (this.dispatcher.isButtonsVisible() ? this.button_size[1] : 0);
     for(var i=1;i<(this.max_height+1);i++) {
       proposed_height = this.border_size * i - subtractor;
       if (proposed_height > text_height) {
@@ -368,23 +311,14 @@ class HommMessageGenerator {
   }
 
   getCharInfo(char) {
-    if(typeof HommMessageGenerator.letters[char] === "undefined") {
-      return null;
-    }
-    var original_char_info = HommMessageGenerator.letters[char];
-    if(typeof original_char_info.same_as !== "undefined") {
-      var real_char = original_char_info.same_as;
-      return HommMessageGenerator.letters[real_char];
-    } else {
-      return original_char_info;
-    }
+    return this.dispatcher.getCharInfo(Homm3MessageGenerator, char);
   }
 
   getStringWidth(string) {
     var width = 0;
     for(var i=0;i<string.length;i++) {
       var char = string[i];
-      if(typeof HommMessageGenerator.letters[char] === "undefined") {
+      if(typeof Homm3MessageGenerator.letters[char] === "undefined") {
         continue;
       }
       if(char === " " && i + 1 == string.length) { // trim only single last space on line
@@ -422,7 +356,7 @@ class HommMessageGenerator {
    * @return {number}
    */
   getCanvasWidth() {
-    return this.getPopupWidth() + (this.draw_shadow ? this.shadow_offset[0] : 0);
+    return this.getPopupWidth() + (this.dispatcher.draw_shadow ? this.shadow_offset[0] : 0);
   }
 
 
@@ -431,7 +365,7 @@ class HommMessageGenerator {
    * @return {number}
    */
   getCanvasHeight() {
-    return this.getPopupHeight() + (this.draw_shadow ? this.shadow_offset[1] : 0);
+    return this.getPopupHeight() + (this.dispatcher.draw_shadow ? this.shadow_offset[1] : 0);
   }
 
 
@@ -537,17 +471,193 @@ class HommMessageGenerator {
    * @return {undefined}
    */
   drawMessageWindow() {
-    if(this.draw_shadow) {
+    if(this.dispatcher.draw_shadow) {
       this.drawShadow();
     }
 
-    if(this.use_color) {
-      var color_info = HommMessageGenerator.colors[this.color];
-    }
+    var color_info = Homm3MessageGenerator.colors[this.dispatcher.color];
 
     this.drawBackground();
+    this.drawCorners(color_info);
+    this.drawHorizontalBorders(color_info);
+    this.drawVerticalBorders(color_info);
 
-    // corners
+    if(this.dispatcher.isButtonsVisible()) {
+      this.drawButtons();
+    }
+  }
+
+  drawButtons() {
+    var buttons_number = ((this.dispatcher.buttons_show.ok) ? 1 : 0) + ((this.dispatcher.buttons_show.cancel) ? 1 : 0);
+    var button_y = this.getPopupHeight() - this.button_size[1] - this.getPadding("bottom");
+    if(this.dispatcher.buttons_show.ok) {
+      var ok_x;
+      if(buttons_number == 1) {
+        ok_x = (this.getPopupWidth() - this.button_size[0]) / 2;
+      }
+      if(buttons_number == 2) {
+        ok_x = this.getPopupWidth() / 2 - (this.button_size[0] + this.button_margin / 2);
+      }
+      this.context.drawImage(
+        this.sprite, 
+        516,
+        228,
+        this.button_size[0],
+        this.button_size[1],
+        ok_x,
+        button_y,
+        this.button_size[0],
+        this.button_size[1]
+      );
+    }
+
+    if(this.dispatcher.buttons_show.cancel) {
+      var cancel_x;
+      if(buttons_number == 2) {
+        cancel_x = (this.getPopupWidth() + this.button_margin) / 2;
+      }
+      if(buttons_number == 1) {
+        cancel_x = (this.getPopupWidth() - this.button_size[0]) / 2;
+      }
+      this.context.drawImage(
+        this.sprite, 
+        516,
+        259,
+        this.button_size[0],
+        this.button_size[1],
+        cancel_x,
+        button_y,
+        this.button_size[0],
+        this.button_size[1]
+      );
+    }
+  }
+
+  drawVerticalBorders(color_info) {
+    for(var i=1;i<this.message_size.height-1;i++) {
+      var right_x_to_set = this.getCanvasWidth() - this.vertical_border_width - (this.dispatcher.draw_shadow ? this.shadow_offset[0] : 0);
+      var y_to_set = i * this.border_size;
+      // left
+      this.context.drawImage(
+        this.sprite, 
+        this.border_size * 2,
+        this.horizontal_border_height,
+        this.vertical_border_width, 
+        this.border_size,
+        0,
+        y_to_set,
+        this.vertical_border_width, 
+        this.border_size
+      );
+
+      // right
+      this.context.drawImage(
+        this.sprite, 
+        this.border_size * 3 - this.vertical_border_width,
+        this.horizontal_border_height,
+        this.vertical_border_width,
+        this.border_size, 
+        right_x_to_set,
+        y_to_set,
+        this.vertical_border_width,
+        this.border_size
+      );
+
+      // colors
+      if(color_info) {
+        // left
+        this.context.drawImage(
+          this.sprite, 
+          color_info.verticals_offset,
+          this.border_size * 2,
+          this.vertical_color_width,
+          this.border_size, 
+          8,
+          y_to_set,
+          this.vertical_color_width,
+          this.border_size
+        );
+
+        // right
+        this.context.drawImage(
+          this.sprite, 
+          color_info.verticals_offset,
+          this.border_size * 2,
+          this.vertical_color_width,
+          this.border_size, 
+          right_x_to_set + 2,
+          y_to_set,
+          this.vertical_color_width,
+          this.border_size
+        );
+      }
+    }
+  }
+
+
+  drawHorizontalBorders(color_info) {
+    for(var i=1;i<this.message_size.width-1;i++) {
+      var x_to_set = i * this.border_size;
+      var y_to_set = this.getCanvasHeight() - this.horizontal_border_height - (this.dispatcher.draw_shadow ? this.shadow_offset[1] : 0);
+      // upper
+      this.context.drawImage(
+        this.sprite, 
+        this.border_size * 2,
+        0,
+        this.border_size, 
+        this.horizontal_border_height,
+        x_to_set,
+        0,
+        this.border_size, 
+        this.horizontal_border_height
+      );
+
+      // lower
+      this.context.drawImage(
+        this.sprite, 
+        this.border_size * 2,
+        this.horizontal_border_height + this.border_size,
+        this.border_size, 
+        this.horizontal_border_height,
+        x_to_set,
+        y_to_set,
+        this.border_size, 
+        this.horizontal_border_height
+      );
+
+      // colors
+      if(color_info) {
+        // upper
+        this.context.drawImage(
+          this.sprite, 
+          this.border_size * 2,
+          color_info.horizontals_offset,
+          this.border_size, 
+          this.horizontal_color_height,
+          x_to_set,
+          8,
+          this.border_size, 
+          this.horizontal_color_height
+        );
+
+        // lower
+        this.context.drawImage(
+          this.sprite, 
+          this.border_size * 2,
+          color_info.horizontals_offset + 1 + this.horizontal_color_height,
+          this.border_size, 
+          this.horizontal_color_height,
+          x_to_set,
+          y_to_set + 2,
+          this.border_size, 
+          this.horizontal_color_height
+        );
+      }
+    }
+  }
+
+
+  drawCorners(color_info) {
     for(var y=0;y<2;y++) {
       for(var x=0;x<2;x++) {
         var x_to_set = 0;
@@ -580,7 +690,7 @@ class HommMessageGenerator {
         );
 
         // color
-        if(this.use_color) {
+        if(color_info) {
           this.context.drawImage(
             this.sprite, 
             color_info.corners_offset[0] + (1 + this.color_corner_size) * x, 
@@ -595,171 +705,6 @@ class HommMessageGenerator {
         }
       }
     }
-
-    // horizontal borders
-    for(var i=1;i<this.message_size.width-1;i++) {
-      var x_to_set = i * this.border_size;
-      var y_to_set = this.getCanvasHeight() - this.horizontal_border_height - (this.draw_shadow ? this.shadow_offset[1] : 0);
-      // upper
-      this.context.drawImage(
-        this.sprite, 
-        this.border_size * 2,
-        0,
-        this.border_size, 
-        this.horizontal_border_height,
-        x_to_set,
-        0,
-        this.border_size, 
-        this.horizontal_border_height
-      );
-
-      // lower
-      this.context.drawImage(
-        this.sprite, 
-        this.border_size * 2,
-        this.horizontal_border_height + this.border_size,
-        this.border_size, 
-        this.horizontal_border_height,
-        x_to_set,
-        y_to_set,
-        this.border_size, 
-        this.horizontal_border_height
-      );
-
-      // colors
-      if(this.use_color) {
-        // upper
-        this.context.drawImage(
-          this.sprite, 
-          this.border_size * 2,
-          color_info.horizontals_offset,
-          this.border_size, 
-          this.horizontal_color_height,
-          x_to_set,
-          8,
-          this.border_size, 
-          this.horizontal_color_height
-        );
-
-        // lower
-        this.context.drawImage(
-          this.sprite, 
-          this.border_size * 2,
-          color_info.horizontals_offset + 1 + this.horizontal_color_height,
-          this.border_size, 
-          this.horizontal_color_height,
-          x_to_set,
-          y_to_set + 2,
-          this.border_size, 
-          this.horizontal_color_height
-        );
-      }
-    }
-
-    // vertical
-    for(var i=1;i<this.message_size.height-1;i++) {
-      var right_x_to_set = this.getCanvasWidth() - this.vertical_border_width - (this.draw_shadow ? this.shadow_offset[0] : 0);
-      var y_to_set = i * this.border_size;
-      // left
-      this.context.drawImage(
-        this.sprite, 
-        this.border_size * 2,
-        this.horizontal_border_height,
-        this.vertical_border_width, 
-        this.border_size,
-        0,
-        y_to_set,
-        this.vertical_border_width, 
-        this.border_size
-      );
-
-      // right
-      this.context.drawImage(
-        this.sprite, 
-        this.border_size * 3 - this.vertical_border_width,
-        this.horizontal_border_height,
-        this.vertical_border_width,
-        this.border_size, 
-        right_x_to_set,
-        y_to_set,
-        this.vertical_border_width,
-        this.border_size
-      );
-
-      // colors
-      if(this.use_color) {
-        // left
-        this.context.drawImage(
-          this.sprite, 
-          color_info.verticals_offset,
-          this.border_size * 2,
-          this.vertical_color_width,
-          this.border_size, 
-          8,
-          y_to_set,
-          this.vertical_color_width,
-          this.border_size
-        );
-
-        // right
-        this.context.drawImage(
-          this.sprite, 
-          color_info.verticals_offset,
-          this.border_size * 2,
-          this.vertical_color_width,
-          this.border_size, 
-          right_x_to_set + 2,
-          y_to_set,
-          this.vertical_color_width,
-          this.border_size
-        );
-      }
-    }
-
-    // buttons
-    var buttons_number = ((this.buttons_show.ok) ? 1 : 0) + ((this.buttons_show.cancel) ? 1 : 0);
-    var button_y = this.getPopupHeight() - this.button_size[1] - this.getPadding("bottom");
-    if(this.buttons_show.ok) {
-      var ok_x;
-      if(buttons_number == 1) {
-        ok_x = (this.getPopupWidth() - this.button_size[0]) / 2;
-      }
-      if(buttons_number == 2) {
-        ok_x = this.getPopupWidth() / 2 - (this.button_size[0] + this.button_margin / 2);
-      }
-      this.context.drawImage(
-        this.sprite, 
-        516,
-        228,
-        this.button_size[0],
-        this.button_size[1],
-        ok_x,
-        button_y,
-        this.button_size[0],
-        this.button_size[1]
-      );
-    }
-
-    if(this.buttons_show.cancel) {
-      var cancel_x;
-      if(buttons_number == 2) {
-        cancel_x = (this.getPopupWidth() + this.button_margin) / 2;
-      }
-      if(buttons_number == 1) {
-        cancel_x = (this.getPopupWidth() - this.button_size[0]) / 2;
-      }
-      this.context.drawImage(
-        this.sprite, 
-        516,
-        259,
-        this.button_size[0],
-        this.button_size[1],
-        cancel_x,
-        button_y,
-        this.button_size[0],
-        this.button_size[1]
-      );
-    }
   }
 
 
@@ -769,7 +714,7 @@ class HommMessageGenerator {
    * @return {undefined}
    */
   getPadding(which) {
-    if(which == "bottom" && !this.isButtonsVisible()) {
+    if(which == "bottom" && !this.dispatcher.isButtonsVisible()) {
       return this.getPadding("top");
     }
 
@@ -790,7 +735,7 @@ class HommMessageGenerator {
   drawScroll() {
     var scroll_x = this.getPopupWidth() - this.vertical_border_width - this.scroll_side - this.scroll_margins.right;
     var scroll_start_y = this.horizontal_border_height + this.scroll_margins.top;
-    var scroll_end_y = this.getPopupHeight() - this.getPadding("bottom") - (this.isButtonsVisible() ? (this.button_size[1] + this.scroll_margins.bottom) : 0);
+    var scroll_end_y = this.getPopupHeight() - this.getPadding("bottom") - (this.dispatcher.isButtonsVisible() ? (this.button_size[1] + this.scroll_margins.bottom) : 0);
     // top arrow
     this.context.drawImage(
       this.sprite, 
@@ -842,10 +787,6 @@ class HommMessageGenerator {
     this.context.fill();
   }
 
-  isButtonsVisible() {
-    return this.buttons_show.ok || this.buttons_show.cancel;
-  }
-
 
   /**
    * Clears canvas and sets defaults where necessary
@@ -856,68 +797,6 @@ class HommMessageGenerator {
     this.forced_height = 0;
     this.scroll_visible = false;
     this.context.clearRect(0, 0, 999999, 999999);
-  }
-
-
-  /**
-   * Sets event listeners for controls
-   * @return {undefined}
-   */
-  initControls() {
-    var colors = document.querySelectorAll(".color-item");
-    for(var i=0;i<colors.length;i++) {
-      colors[i].addEventListener("click", this.setColor.bind(this, colors[i].getAttribute("data-color")));
-    }
-
-    var checkboxes = document.querySelectorAll(".checkbox-wrapper");
-    for(var i=0;i<checkboxes.length;i++) {
-      checkboxes[i].addEventListener("click", this.toggleCheckbox.bind(this, checkboxes[i].getAttribute("data-button")));
-    }
-
-    document.querySelector(".about-icon.open").addEventListener("click", function() {
-      document.querySelector(".left-panel").classList.add("about");
-    });
-    document.querySelector(".about-icon.close").addEventListener("click", function() {
-      document.querySelector(".left-panel").classList.remove("about");
-    });
-    document.querySelector(".download-button").addEventListener("mousedown", this.prepareCurrentImageDownload.bind(this));
-  }
-
-
-  /**
-   * Sets message window color and sets color flag as selected
-   * @param {string} color - color id
-   * @return {undefined}
-   */
-  setColor(color) {
-    var colors = document.querySelectorAll(".color-item");
-    for(var i=0;i<colors.length;i++) {
-      colors[i].classList.remove("selected");
-    }
-    document.querySelector(".color-item[data-color='" + color + "']").classList.add("selected");
-    this.color = color;
-
-    this.render();
-  }
-
-  /**
-   * Toggles checkbox for buttons set control
-   * @param {string} button_id - data-button attribute value
-   * @return {undefined}
-   */
-  toggleCheckbox(button_id) {
-    var new_value;
-    if(button_id == "shadow") {
-      new_value = !this.draw_shadow;
-      this.draw_shadow = new_value;
-    } else {
-      var new_value = !this.buttons_show[button_id];
-      this.buttons_show[button_id] = new_value;
-    }
-
-    document.querySelector(".checkbox-wrapper[data-button='" + button_id + "'] .checkbox-icon").classList[new_value ? "add" : "remove"]("checked");
-
-    this.render();
   }
 
   getResizeOrHalfAt(type) {
@@ -965,7 +844,7 @@ class HommMessageGenerator {
       y_to_draw += char_info.translateY;
     }
 
-    if(!this.isButtonsVisible()) {
+    if(!this.dispatcher.isButtonsVisible()) {
       y_to_draw += Math.round((this.getPopupHeight() - this.text_by_lines.length * this.line_height)/2) - 7; // dunno what is 7 but it works :[
       return y_to_draw;
     }
@@ -1005,19 +884,9 @@ class HommMessageGenerator {
 
     return y_to_draw;
   }
-
-  /**
-   * Starts downloading of current image as file
-   */
-  prepareCurrentImageDownload() {
-    var download_button = document.querySelector(".download-button");
-    var current_date = new Date();
-    download_button.download = "HoMM3-message-" + (current_date.getTime()) + ".png";
-    download_button.href = this.canvas.toDataURL();
-  }
 }
 
-HommMessageGenerator.letters = {
+Homm3MessageGenerator.letters = {
   " ": {
     "width": 3
   },
@@ -2394,7 +2263,7 @@ HommMessageGenerator.letters = {
   }
 }
 
-HommMessageGenerator.colors = {
+Homm3MessageGenerator.colors = {
   "red": {
     "corners_offset": [192, 0],
     "horizontals_offset": 95,
@@ -2445,7 +2314,7 @@ HommMessageGenerator.colors = {
   },
 };
 
-HommMessageGenerator.sizes = [
+Homm3MessageGenerator.sizes = [
   {
     "width": 4,
     "height": 2,

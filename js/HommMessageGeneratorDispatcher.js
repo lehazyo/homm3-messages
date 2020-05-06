@@ -95,7 +95,7 @@ class HommMessageGeneratorDispatcher {
       colors[i].classList.remove("selected");
     }
     document.querySelector(".color-item[data-color='" + color + "']").classList.add("selected");
-    this.renderer.color = color;
+    this.color = color;
 
     this.render();
   }

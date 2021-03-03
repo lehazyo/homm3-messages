@@ -12,4 +12,6 @@ New image is instantly generated on the right. You can either screenshot it or d
 
 ## Supported characters
 
-Only ASCII characters for Latin and Cyrillic alphabets are now supported.
+* Latin, Cyrillic, Polish, Hungarian alphabets
+* Digits
+* ASCII special characters

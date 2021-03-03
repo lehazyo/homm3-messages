@@ -11,6 +11,7 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
+  background-color: #010008;
   background-repeat: repeat;
   color: #fff;
   text-shadow: 2px 2px 0 #000;
@@ -21,9 +22,11 @@ body {
 }
 
 body.homm2 {
+  background-color: #040404;
   background-image: url(../img/homm2-void.png);
 }
 body.homm3 {
+  background-color: #010008;
   background-image: url(../img/homm3-void.png);
 }
 
@@ -60,12 +63,14 @@ body.homm3 {
   background:
     url(../img/homm3-border.png) 100% 0 repeat-y,
     url(../img/homm3-border-bg.png) 0 0 repeat;
+  background-color: #0d0c0a;
 }
 
 .homm2 .left-panel {
   background:
     url(../img/homm2-border.png) 100% 0 repeat-y,
     url(../img/homm2-panel-bg.png) 0 0 repeat;
+  background-color: #75431e;
 }
 
 .left-panel.about .controls-wrapper {
@@ -215,28 +220,28 @@ body.homm3 {
 
 
 .homm3 .color-item[data-color="red"] {
-  background: url(../img/homm3-players/red.png);
+  background: #d7201a url(../img/homm3-players/red.png);
 }
 .homm3 .color-item[data-color="blue"] {
-  background: url(../img/homm3-players/blue.png);
+  background: #4059c8 url(../img/homm3-players/blue.png);
 }
 .homm3 .color-item[data-color="brown"] {
-  background: url(../img/homm3-players/brown.png);
+  background: #d1a279 url(../img/homm3-players/brown.png);
 }
 .homm3 .color-item[data-color="green"] {
-  background: url(../img/homm3-players/green.png);
+  background: #1f6828 url(../img/homm3-players/green.png);
 }
 .homm3 .color-item[data-color="orange"] {
-  background: url(../img/homm3-players/orange.png);
+  background: #cb680c url(../img/homm3-players/orange.png);
 }
 .homm3 .color-item[data-color="violet"] {
-  background: url(../img/homm3-players/violet.png);
+  background: #562965 url(../img/homm3-players/violet.png);
 }
 .homm3 .color-item[data-color="teal"] {
-  background: url(../img/homm3-players/teal.png);
+  background: #67a4a5 url(../img/homm3-players/teal.png);
 }
 .homm3 .color-item[data-color="pink"] {
-  background: url(../img/homm3-players/pink.png);
+  background: #d39b8a url(../img/homm3-players/pink.png);
 }
 
 .buttons-wrapper {

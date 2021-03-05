@@ -314,27 +314,29 @@ class Homm2MessageGenerator {
       var char_y = this.getCharY(char_info);
       var char_height = Homm2MessageGenerator.line_height;
 
+      var extraHeightUp = (typeof char_info.extraHeightUp === "undefined") ? 0 : char_info.extraHeightUp;
+      var extraHeightDown = (typeof char_info.extraHeightDown === "undefined") ? 0 : char_info.extraHeightDown;
       this.context.drawImage(
         this.sprite, 
         char_x, 
-        char_y,
+        char_y - extraHeightUp,
         char_info.width, 
-        char_height,
+        char_height + extraHeightUp + extraHeightDown,
         x_to_draw,
-        y_to_draw,
+        y_to_draw - extraHeightUp,
         char_info.width, 
-        char_height,
+        char_height + extraHeightUp + extraHeightDown,
       );
       this.context.drawImage(
         this.sprite, 
-        char_x, 
-        this.getCharShadowY(char_info),
+        char_x - 1, 
+        this.getCharShadowY(char_info) - extraHeightUp + 1,
         char_info.width, 
-        char_height,
-        x_to_draw,
-        y_to_draw,
+        char_height + extraHeightUp + extraHeightDown - 1,
+        x_to_draw - 1,
+        y_to_draw - extraHeightUp + 1,
         char_info.width, 
-        char_height,
+        char_height + extraHeightUp + extraHeightDown - 1,
       );
     }
 
@@ -464,7 +466,7 @@ Homm2MessageGenerator.letter_container_width = 19;
 Homm2MessageGenerator.line_height = 16;
 Homm2MessageGenerator.letters_offset_x = 1;
 Homm2MessageGenerator.letters_offset_y = 313;
-Homm2MessageGenerator.letters_shadow_offset_y = 467;
+Homm2MessageGenerator.letters_shadow_offset_y = 483;
 Homm2MessageGenerator.letter_spacing = 2;
 
 Homm2MessageGenerator.sections_info = {
@@ -1384,5 +1386,189 @@ Homm2MessageGenerator.letters = {
     "x": 31,
     "y": 7,
     "width": 10
+  },
+  "ą": {
+    "x": 0,
+    "y": 9,
+    "width": 9
+  },
+  "ć": {
+    "x": 1,
+    "y": 9,
+    "width": 8
+  },
+  "ę": {
+    "x": 2,
+    "y": 9,
+    "width": 8
+  },
+  "ł": {
+    "x": 3,
+    "y": 9,
+    "width": 7
+  },
+  "ń": {
+    "x": 4,
+    "y": 9,
+    "width": 9
+  },
+  "ó": {
+    "x": 5,
+    "y": 9,
+    "width": 8
+  },
+  "ś": {
+    "x": 6,
+    "y": 9,
+    "width": 7
+  },
+  "ź": {
+    "x": 7,
+    "y": 9,
+    "width": 8
+  },
+  "ż": {
+    "x": 8,
+    "y": 9,
+    "width": 8
+  },
+  "Ą": {
+    "x": 9,
+    "y": 9,
+    "width": 14
+  },
+  "Ć": {
+    "x": 10,
+    "y": 9,
+    "width": 12
+  },
+  "Ę": {
+    "x": 11,
+    "y": 9,
+    "width": 10,
+    "extraHeightDown": 1
+  },
+  "Ł": {
+    "x": 12,
+    "y": 9,
+    "width": 10
+  },
+  "Ń": {
+    "x": 13,
+    "y": 9,
+    "width": 14,
+    "extraHeightUp": 4
+  },
+  "Ó": {
+    "x": 14,
+    "y": 9,
+    "width": 12,
+    "extraHeightUp": 4
+  },
+  "Ś": {
+    "x": 15,
+    "y": 9,
+    "width": 9,
+    "extraHeightUp": 4
+  },
+  "Ź": {
+    "x": 17,
+    "y": 9,
+    "width": 10,
+    "extraHeightUp": 4
+  },
+  "Ż": {
+    "x": 18,
+    "y": 9,
+    "width": 10,
+    "extraHeightUp": 4
+  },
+  "á": {
+    "x": 16,
+    "y": 9,
+    "width": 9
+  },
+  "é": {
+    "x": 19,
+    "y": 9,
+    "width": 8
+  },
+  "í": {
+    "x": 20,
+    "y": 9,
+    "width": 4
+  },
+  "ö": {
+    "x": 21,
+    "y": 9,
+    "width": 8
+  },
+  "ő": {
+    "x": 22,
+    "y": 9,
+    "width": 8
+  },
+  "ú": {
+    "x": 23,
+    "y": 9,
+    "width": 9
+  },
+  "ű": {
+    "x": 24,
+    "y": 9,
+    "width": 9
+  },
+  "ü": {
+    "x": 25,
+    "y": 9,
+    "width": 9
+  },
+  "Á": {
+    "x": 26,
+    "y": 9,
+    "width": 14,
+    "extraHeightUp": 4
+  },
+  "É": {
+    "x": 27,
+    "y": 9,
+    "width": 10,
+    "extraHeightUp": 4
+  },
+  "Í": {
+    "x": 28,
+    "y": 9,
+    "width": 6,
+    "extraHeightUp": 4
+  },
+  "Ö": {
+    "x": 29,
+    "y": 9,
+    "width": 12,
+    "extraHeightUp": 4
+  },
+  "Ő": {
+    "x": 30,
+    "y": 9,
+    "width": 12,
+    "extraHeightUp": 4
+  },
+  "Ú": {
+    "x": 31,
+    "y": 9,
+    "width": 11,
+    "extraHeightUp": 4
+  },
+  "Ű": {
+    "x": 32,
+    "y": 9,
+    "width": 11,
+    "extraHeightUp": 4
+  },
+  "Ü": {
+    "x": 33,
+    "y": 9,
+    "width": 11,
+    "extraHeightUp": 4
   },
 };
